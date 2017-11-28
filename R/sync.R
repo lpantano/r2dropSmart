@@ -30,13 +30,12 @@ sync <- function(path, remote, token = NULL,
     stopifnot(is.character(path))
     stopifnot(dir.exists(path))
     remote <- clean(remote)
-    path <- clean(path)
+    path <- normalizePath(clean(path))
     message("Syncing ", path, " into ", remote)
     cache_fn <- file.path(path, ".r2dropSmart_cache.rda")
     share_fn <- file.path(path, ".r2dropSmart_share.rda")
     current_path <- getwd()
-    setwd(path)
-    fns <- list.files(".", full.names = TRUE, pattern = pattern, recursive = TRUE)
+    fns <- list.files(path, full.names = TRUE, pattern = pattern, recursive = TRUE)
     if (!is.null(blackList)){
         black_matrix <- sapply(blackList, function(b){
             grepl(b, fns)
@@ -44,13 +43,12 @@ sync <- function(path, remote, token = NULL,
         fns <- fns[which(rowSums(black_matrix) == 0)]
     }
 
-    if (dry){
-        setwd(current_path)
-        return(fns)
-    }
     null = lapply(fns, function(fn){
-        update(fn, remote, token, cache_fn)
+        update(fn, remote, path, token, cache_fn, dry)
     })
+    if(dry){
+        return(invisible())
+    }
     cache <- md5sum(fns)
     save(cache, file = cache_fn)
     if (share & !file.exists(share_fn)){
@@ -61,11 +59,10 @@ sync <- function(path, remote, token = NULL,
         load(share_fn)
         return(s[["url"]])
     }
-    setwd(current_path)
     invisible()
 }
 
-update <- function(fn, remote, token, cache_fn){
+update <- function(fn, remote, parent, token, cache_fn, dry){
     cache = vector()
     if (file.exists(cache_fn)){
         load(cache_fn)
@@ -74,17 +71,24 @@ update <- function(fn, remote, token, cache_fn){
         cache[fn] = 0
     if (cache[fn] == md5sum(fn))
         message(fn, " is already updated. Skipping.")
+    if (dry){
+        if (cache[fn] != md5sum(fn))
+            message("uploading ", fn, " into ", fix(remote, fn, parent))
+        return(NULL)
+    }
     if (cache[fn] != md5sum(fn))
-        drop_upload(normalizePath(fn), path = fix(remote, fn), dtoken = token)
+        drop_upload(normalizePath(fn), path = fix(remote, fn, parent), dtoken = token)
 }
 
-fix <- function(dir, fn){
-    if (dirname(fn) == ".")
+fix <- function(dir, fn, parent){
+    fn <- normalizePath(fn)
+    subFolder <- clean(gsub(parent, "", dirname(fn)))
+    if (parent == dirname(fn))
         return(dir)
-    new_path <- do.call(file.path, as.list(strsplit(dirname(fn), .Platform$file.sep)[[1]][-1]))
-    return(file.path(dir, new_path))
+    return(file.path(dir, subFolder))
 }
 
 clean <- function(dir){
-    do.call(file.path, as.list(strsplit(dir, .Platform$file.sep)[[1]]))
+    folders <- strsplit(dir, .Platform$file.sep)[[1]]
+    do.call(file.path, as.list(folders[folders != ""]))
 }
