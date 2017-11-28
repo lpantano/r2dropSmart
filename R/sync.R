@@ -16,6 +16,14 @@
 #' @param share Whether create a sharing link or not.
 #' @param dry Not perform action but list the files to be upload.
 #' @param ... Options to pass to [rdrop2::drop_share()]
+#'
+#' @examples
+#'
+#' local <- "."
+#' remote <- "path/to/drobox"
+#' library(rdrop2)
+#' # token <- readRDS("~/.droptoken.rds")
+#' # sync(loca, remote, pattern = ".R", dry = TRUE)
 #' @export
 sync <- function(path, remote, token,
                  pattern = NULL, blackList = NULL, share = FALSE, dry = FALSE, ...) {

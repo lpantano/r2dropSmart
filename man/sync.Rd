@@ -33,3 +33,11 @@ It optionally creates the sharing link.
 It upload only changed files, using \code{\link[tools:md5sum]{tools::md5sum()}} to
 compare versions.
 }
+\examples{
+
+local <- "."
+remote <- "path/to/drobox"
+library(rdrop2)
+# token <- readRDS("~/.droptoken.rds")
+# sync(loca, remote, pattern = ".R", dry = TRUE)
+}
