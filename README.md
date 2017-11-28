@@ -13,8 +13,10 @@ devtools::install_github("lpantano/r2dropSmart")
 To sync an entire folder use:
 
 ```
-sync(".", "path/in/dropbox", token = token)
+sync(".", "path/in/dropbox", token = token, dry = TRUE)
 ```
+
+`dry` option will show the files to update but do nothing.
 
 Use `pattern` option to include only specific files, or use `blackList` to ignore others.
 

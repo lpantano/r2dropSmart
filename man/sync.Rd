@@ -5,7 +5,7 @@
 \title{Syncronize full folder to dropbox path}
 \usage{
 sync(path, remote, token, pattern = NULL, blackList = NULL, share = FALSE,
-  ...)
+  dry = FALSE, ...)
 }
 \arguments{
 \item{path}{Local path in the computer}
@@ -21,6 +21,8 @@ Pass into \code{\link[base:list.files]{base::list.files()}}.}
 files that match those expression.}
 
 \item{share}{Whether create a sharing link or not.}
+
+\item{dry}{Not perform action but list the files to be upload.}
 
 \item{...}{Options to pass to \code{\link[rdrop2:drop_share]{rdrop2::drop_share()}}}
 }

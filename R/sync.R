@@ -14,10 +14,11 @@
 #' @param blackList Character vector that will be used to remove
 #'   files that match those expression.
 #' @param share Whether create a sharing link or not.
+#' @param dry Not perform action but list the files to be upload.
 #' @param ... Options to pass to [rdrop2::drop_share()]
 #' @export
 sync <- function(path, remote, token,
-                 pattern = NULL, blackList = NULL, share = FALSE, ...) {
+                 pattern = NULL, blackList = NULL, share = FALSE, dry = FALSE, ...) {
     stopifnot(is.character(path))
     stopifnot(dir.exists(path))
     remote <- clean(remote)
@@ -34,6 +35,8 @@ sync <- function(path, remote, token,
         fns <- fns[which(rowSums(black_matrix) == 0)]
     }
 
+    if (dry)
+        return(fns)
     null = lapply(fns, function(fn){
         update(fn, remote, token, cache_fn)
     })
@@ -51,6 +54,7 @@ sync <- function(path, remote, token,
 }
 
 update <- function(fn, remote, token, cache_fn){
+    cache = vector()
     if (file.exists(cache_fn)){
         load(cache_fn)
     }
