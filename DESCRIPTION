@@ -1,0 +1,17 @@
+Package: r2dropSmart
+Type: Package
+Title: Everyday functions using rdrop2 to connect to Dropbox
+Version: 0.1.0
+Date: 2017-11-28
+Author: Lorena Pantano
+Maintainer: Lorena Pantano <lorena.pantano@gmail.com>
+Description: Sync entire folder with Dropbox.
+    Use of cache to update only new files or changed files.
+Imports:
+    tools,
+    rdrop2
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1.9000
+Roxygen: list(markdown = TRUE)
