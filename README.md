@@ -18,6 +18,8 @@ sync(".", "path/in/dropbox", token = token, dry = TRUE)
 
 `dry` option will show the files to update but do nothing.
 
+This will copy the content of the current `.` folder to `path/in/dropbox`.
+
 Use `pattern` option to include only specific files, 
 or use `blackList` to ignore others. The latest allows more than one character.
 For instance, `blackList = c("data", "Rmd", ".yaml", ".bib")`
