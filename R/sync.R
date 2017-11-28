@@ -25,7 +25,7 @@
 #' # token <- readRDS("~/.droptoken.rds")
 #' # sync(loca, remote, pattern = ".R", dry = TRUE)
 #' @export
-sync <- function(path, remote, token,
+sync <- function(path, remote, token = NULL,
                  pattern = NULL, blackList = NULL, share = FALSE, dry = FALSE, ...) {
     stopifnot(is.character(path))
     stopifnot(dir.exists(path))
@@ -34,6 +34,7 @@ sync <- function(path, remote, token,
     message("Syncing ", path, " into ", remote)
     cache_fn <- file.path(path, ".r2dropSmart_cache.rda")
     share_fn <- file.path(path, ".r2dropSmart_share.rda")
+    current_path <- getwd()
     setwd(path)
     fns <- list.files(".", full.names = TRUE, pattern = pattern, recursive = TRUE)
     if (!is.null(blackList)){
@@ -43,8 +44,10 @@ sync <- function(path, remote, token,
         fns <- fns[which(rowSums(black_matrix) == 0)]
     }
 
-    if (dry)
+    if (dry){
+        setwd(current_path)
         return(fns)
+    }
     null = lapply(fns, function(fn){
         update(fn, remote, token, cache_fn)
     })
@@ -58,6 +61,7 @@ sync <- function(path, remote, token,
         load(share_fn)
         return(s[["url"]])
     }
+    setwd(current_path)
     invisible()
 }
 
