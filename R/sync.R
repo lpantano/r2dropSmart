@@ -15,6 +15,7 @@
 #'   files that match those expression.
 #' @param share Whether create a sharing link or not.
 #' @param dry Not perform action but list the files to be upload.
+#' @param force Force to upload files to drobox.
 #' @param ... Options to pass to [rdrop2::drop_share()]
 #'
 #' @examples
@@ -26,7 +27,8 @@
 #' # sync(loca, remote, pattern = ".R", dry = TRUE)
 #' @export
 sync <- function(path, remote, token = NULL,
-                 pattern = NULL, blackList = NULL, share = FALSE, dry = FALSE, ...) {
+                 pattern = NULL, blackList = NULL, share = FALSE,
+                 dry = FALSE, force = FALSE, ...) {
     stopifnot(is.character(path))
     stopifnot(dir.exists(path))
     remote <- clean(remote)
@@ -44,7 +46,7 @@ sync <- function(path, remote, token = NULL,
     }
 
     null = lapply(fns, function(fn){
-        update(fn, remote, path, token, cache_fn, dry)
+        update(fn, remote, path, token, cache_fn, dry, force)
     })
     if(dry){
         return(invisible())
@@ -52,7 +54,7 @@ sync <- function(path, remote, token = NULL,
     cache <- md5sum(fns)
     save(cache, file = cache_fn)
     if (share & !file.exists(share_fn)){
-        s <- drop_share(remote, ...)
+        s <- drop_share(remote, dtoken = token...)
         save(s, file = share_fn)
     }
     if (share & file.exists(share_fn)){
@@ -62,7 +64,7 @@ sync <- function(path, remote, token = NULL,
     invisible()
 }
 
-update <- function(fn, remote, parent, token, cache_fn, dry){
+update <- function(fn, remote, parent, token, cache_fn, dry, force){
     cache = vector()
     if (file.exists(cache_fn)){
         load(cache_fn)
@@ -70,13 +72,13 @@ update <- function(fn, remote, parent, token, cache_fn, dry){
     if (! fn %in% names(cache))
         cache[fn] = 0
     if (cache[fn] == md5sum(fn))
-        message(fn, " is already updated. Skipping.")
+        message("Skipping: ", basename(fn), ", is already updated. ")
     if (dry){
         if (cache[fn] != md5sum(fn))
-            message("uploading ", fn, " into ", fix(remote, fn, parent))
+            message("Uploading: ", basename(fn), " into ", fix(remote, fn, parent))
         return(NULL)
     }
-    if (cache[fn] != md5sum(fn))
+    if (cache[fn] != md5sum(fn) | force)
         drop_upload(normalizePath(fn), path = fix(remote, fn, parent), dtoken = token)
 }
 
