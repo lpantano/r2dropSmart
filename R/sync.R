@@ -54,7 +54,7 @@ sync <- function(path, remote, token = NULL,
     cache <- md5sum(fns)
     save(cache, file = cache_fn)
     if (share & !file.exists(share_fn)){
-        s <- drop_share(remote, dtoken = token...)
+        s <- drop_share(remote, dtoken = token, ...)
         save(s, file = share_fn)
     }
     if (share & file.exists(share_fn)){
