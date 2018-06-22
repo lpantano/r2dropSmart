@@ -26,6 +26,20 @@ For instance, `blackList = c("data", "Rmd", ".yaml", ".bib")`
 
 The option `share` will return the sharing url from dropbox.
 
+More complex example:
+
+```
+library(r2dropSmart)
+token <- readRDS("~/.droptoken.rds")
+
+sync(".", remote = dropdir, token = token,
+     blackList = c("cache", "data", "Rmd", "R$", "_files", "_cache"),
+     dry = T,
+     share = T)
+```
+
+**shared link gets copied to clipboard at the end of the sync**
+
 ## How it works
 
 It uses list.files to get all the files from the folder and the upload with
