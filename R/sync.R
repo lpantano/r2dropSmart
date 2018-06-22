@@ -45,9 +45,9 @@ sync <- function(path, remote, token = NULL,
         fns <- fns[which(rowSums(black_matrix) == 0)]
     }
 
-    null = lapply(fns, function(fn){
+    invisible(lapply(fns, function(fn){
         update(fn, remote, path, token, cache_fn, dry, force)
-    })
+    }))
     if(dry){
         return(invisible())
     }
@@ -59,6 +59,7 @@ sync <- function(path, remote, token = NULL,
     }
     if (share & file.exists(share_fn)){
         load(share_fn)
+        write_clip(gsub("dl=0", "dl=1", s[["url"]]))
         return(s[["url"]])
     }
     invisible()

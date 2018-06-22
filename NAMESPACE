@@ -2,4 +2,5 @@
 
 export(sync)
 import(rdrop2)
+importFrom(clipr,write_clip)
 importFrom(tools,md5sum)

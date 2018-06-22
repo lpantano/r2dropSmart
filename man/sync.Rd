@@ -4,8 +4,8 @@
 \alias{sync}
 \title{Syncronize full folder to dropbox path}
 \usage{
-sync(path, remote, token, pattern = NULL, blackList = NULL, share = FALSE,
-  dry = FALSE, ...)
+sync(path, remote, token = NULL, pattern = NULL, blackList = NULL,
+  share = FALSE, dry = FALSE, force = FALSE, ...)
 }
 \arguments{
 \item{path}{Local path in the computer}
@@ -23,6 +23,8 @@ files that match those expression.}
 \item{share}{Whether create a sharing link or not.}
 
 \item{dry}{Not perform action but list the files to be upload.}
+
+\item{force}{Force to upload files to drobox.}
 
 \item{...}{Options to pass to \code{\link[rdrop2:drop_share]{rdrop2::drop_share()}}}
 }
