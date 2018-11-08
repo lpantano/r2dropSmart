@@ -54,13 +54,13 @@ sync <- function(path, remote, token = NULL,
     cache <- md5sum(fns)
     save(cache, file = cache_fn)
     if (share & !file.exists(share_fn)){
-        s <- drop_share(remote, dtoken = token, ...)
+        s <- drop_smart_share(remote, dtoken = token, ...)
         save(s, file = share_fn)
     }
     if (share & file.exists(share_fn)){
         load(share_fn)
-        write_clip(gsub("dl=0", "dl=1", s[["url"]]))
-        return(s[["url"]])
+        write_clip(gsub("dl=0", "dl=1", s))
+        return(s)
     }
     invisible()
 }
@@ -95,3 +95,50 @@ clean <- function(dir){
     folders <- strsplit(dir, .Platform$file.sep)[[1]]
     do.call(file.path, as.list(folders[folders != ""]))
 }
+
+#' Share or get a path in your dropbox account
+#'
+#' It will create a shared link with public settings or
+#' get the link if already exists.
+#'
+#' @param path Local path in the computer
+#' @param token Security token. [rdrop2::drop_auth()]
+#'
+#' @examples
+#' dropdir = "test/folder"
+#' # token <- readRDS("~/.droptoken.rds")
+#' # drop_smart_share(dropdir, dtoken = token)
+#' @export
+drop_smart_share <-
+    function (path, dtoken)
+    {
+        if (length(path) && !grepl("^/", path)) {
+            path <- paste0("/", path)
+        }
+        # browser()
+        share_url <- "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings"
+        req <- httr::POST(url = share_url, httr::config(token = dtoken),
+                          body = list(path = path), encode = "json")
+        response <- httr::content(req)
+        browser()
+        if ("url"  %in% response){
+            write_clip(gsub("dl=0", "dl=1", response[["url"]]))
+            return(response[["url"]])
+        }
+        message("It seems link already exists. Getting url.")
+        share_url <- "https://api.dropboxapi.com/2/sharing/share_folder"
+        req <- httr::POST(url = share_url, httr::config(token = dtoken),
+                          body = list(path = path), encode = "json")
+        res <- httr::content(req)
+        link <- NULL
+        if ("preview_url"  %in%  names(res))
+            link <- res$preview_url
+        if ("error"  %in% names(res))
+            link <- res$error$bad_path$preview_url
+        if (!is.null(link)){
+            write_clip(gsub("dl=0", "dl=1", link))
+            return(link)
+        }
+        return(link)
+    }
+

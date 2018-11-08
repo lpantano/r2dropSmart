@@ -1,8 +1,8 @@
 Package: r2dropSmart
 Type: Package
 Title: Everyday functions using rdrop2 to connect to Dropbox
-Version: 0.1.1
-Date: 2018-06-22
+Version: 0.1.2
+Date: 2018-11-08
 Author: Lorena Pantano
 Maintainer: Lorena Pantano <lorena.pantano@gmail.com>
 Description: Sync entire folder with Dropbox.
